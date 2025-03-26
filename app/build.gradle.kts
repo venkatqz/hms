@@ -1,10 +1,7 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-
-    id("com.android.application")
-    id("com.google.gms.google-services")
-
+    id("com.android.application") // ✅ Required for Android project
+    id("org.jetbrains.kotlin.android") // ✅ Required for Kotlin in Android
+    id("com.google.gms.google-services") // ✅ Firebase (if needed)
 }
 
 android {
@@ -30,25 +27,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
-}
-
-dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
-    implementation("com.google.firebase:firebase-analytics")
+//    testOptions {
+//        unitTests.isIncludeAndroidResources = true
+//    }
 }

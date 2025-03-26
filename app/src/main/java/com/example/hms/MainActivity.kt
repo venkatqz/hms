@@ -1,20 +1,52 @@
 package com.example.hms
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
+
+        val currentUser = auth.currentUser
+
+        if (currentUser == null) {
+            // No user is logged in, go to login page
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+            // User is logged in, check their role and redirect
+            checkUserRole(currentUser.uid)
         }
+    }
+
+    private fun checkUserRole(uid: String) {
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { document ->
+                val userRole = document.getString("role")
+
+                val intent = when (userRole) {
+//                    "Admin" -> Intent(this, AdminDashboard::class.java)
+//                    "Student" -> Intent(this, StudentDashboard::class.java)
+//                    "Worker" -> Intent(this, WorkerDashboard::class.java)
+                    else -> Intent(this, LoginActivity::class.java) // Fallback
+                }
+
+                startActivity(intent)
+                finish()
+            }
+            .addOnFailureListener {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
     }
 }
